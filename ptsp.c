@@ -1,38 +1,85 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
 
 int Maxlen;
 int limit_child;
-int weight[50][50] ;
-int path[50] ;
-int used[50] ;
-int length = 0 ;
-int min = -1 ;
-int completed[50],n,cost=0;
+int weight[50][50];
+int path[50];
+int used[50];
+int length = 0;
+int min = -1;
 
-//Problem main func
-void mincost(int city)
+void _travel(int idx)
 {
-	int i, ncity;
-	pthread_t p_thread[limit_child];
+	int i;
 
-	completed[city]=1;
- 
-	printf("%d--->",city+1);
-	ncity=least(city);
- 
-	if(ncity==999)
+	if (idx == 17)
 	{
-		ncity=0;
-		printf("%d",ncity+1);
-		cost+=weight[city][ncity];
- 
-		return;
+		length += m[path[16]][path[0]];
+		if (min == -1 || min > length)
+		{
+			min = length;
+
+			printf("%d (", length);
+			for (i = 0; i < 17; i++)
+				printf("%d ", path[i]);
+			printf("%d)\n", path[0]);
+		}
+		length -= m[path[16]][path[0]];
 	}
+	else
+	{
+		for (i = 0; i < 17; i++)
+		{
+			if (used[i] == 0)
+			{
+				path[idx] = i;
+				used[i] = 1;
+				length += m[path[idx - 1]][i];
+				_travel(idx + 1);
+				length -= m[path[idx - 1]][i];
+				used[i] = 0;
+			}
+		}
+	}
+}
+
+void travel(int start)
+{
+	path[0] = start;
+	used[start] = 1;
+	_travel(1);
+	used[start] = 0;
+}
+
+int main(int argc, char *argv[])
+{
+	char filename[100];
+	char num[5];
+	int pw;
+
+	//Store input data
+	strcpy(filename, argv[1]);
+	limit_child = atoi(argv[2]);
+
+	//Get Maxlen
+	sscanf(filename, "%2s %2d", num, &Maxlen);
+
+	//Read the data from .tsp
+	FILE *fp = fopen(filename, "r");
+	for (int i = 0; i < Maxlen; i++)
+	{
+		for (int j = 0; j < Maxlen; j++)
+		{
+			fscanf(fp, "%d", &pw);
+			weight[i][j] = pw;
+		}
+	}
+	fclose(fp);
 
 	/*
 	for(int i = 0; i < limit_child; i++){
@@ -68,56 +115,11 @@ void mincost(int city)
 			pthread_cond_signal(&c) ;
 		pthread_mutex_unlock(&m) ;
 	*/
- 
-	mincost(ncity);
-}
 
-//Problem sub-func
-int least(int c)
-{
-	int i,nc=999;
-	int min=999,kmin;
- 
-	for(i=0;i < n;i++)
+	for (i = 0; i < 17; i++)
 	{
-		if((weight[c][i]!=0)&&(completed[i]==0))
-			if(weight[c][i]+weight[i][c] < min)
-			{
-				min=weight[i][0]+weight[c][i];
-				kmin=weight[c][i];
-				nc=i;
-			}
+		travel(i);
 	}
- 
-	if(min!=999)
-		cost+=kmin;
- 
-	return nc;
-}
-
-int main(int argc, char *argv[]) {
-	char filename[100];
-    char num[5];
-	int pw;
-
-	//Store input data
-	strcpy(filename, argv[1]);
-	limit_child = atoi(argv[2]);
-	
-	//Get Maxlen
-	sscanf(filename, "%2s %2d", num,&Maxlen);
-
-	//Read the data from .tsp
-	FILE * fp = fopen(filename, "r") ;
-	for (int i = 0 ; i < Maxlen ; i++) {
-		for (int j = 0 ; j < Maxlen ; j++) {
-			fscanf(fp, "%d", &pw) ;
-			weight[i][j] = pw ;
-		}
-	}
-	fclose(fp) ;
-
-	mincost(0);
 
 	return 0;
 }
