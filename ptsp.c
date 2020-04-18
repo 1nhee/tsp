@@ -52,10 +52,13 @@ int main(int argc, char *argv[]) {
 
 	//Store input data
 	strcpy(filename, argv[1]);
-	limit_child = agrv[2];
+	limit_child = atoi(argv[2]);
+	printf("filename: %s, limit_cild: %d\n", filename, limit_child);
 	
 	//Get Maxlen
 	Maxlen = atoi(filename);
+	sscanf(filename, "%2s %2d", num,&Maxlen);
+	printf("Maxlen: %d\n", Maxlen);
 
 	FILE * fp = fopen(filename, "r") ;
 
