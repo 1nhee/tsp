@@ -3,9 +3,9 @@
 #include <string.h> 
 
 int Maxlen;
-int weight[Maxlen][Maxlen] ;
-int path[Maxlen] ;
-int used[Maxlen] ;
+int weight[50][50] ;
+int path[50] ;
+int used[50] ;
 int length = 0 ;
 int min = -1 ;
 
@@ -13,19 +13,19 @@ void _travel(int idx) {
 	int i ;
 
 	if (idx == Maxlen) {
-		length += weight[path[16]][path[0]] ;
+		length += weight[path[(Maxlen-1)]][path[0]] ;
 		if (min == -1 || min > length) {
 			min = length ;
 
 			printf("%d (", length) ;
-			for (i = 0 ; i < 17 ; i++) 
+			for (i = 0 ; i < Maxlen ; i++) 
 				printf("%d ", path[i]) ;
 			printf("%d)\n", path[0]) ;	
 		}
-		length -= weight[path[16]][path[0]] ;
+		length -= weight[path[(Maxlen-1)]][path[0]] ;
 	}
 	else {
-		for (i = 0 ; i < 17 ; i++) {
+		for (i = 0 ; i < Maxlen ; i++) {
 			if (used[i] == 0) {
 				path[idx] = i ;
 				used[i] = 1 ;
