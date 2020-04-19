@@ -1,26 +1,29 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <signal.h>
-#include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
+//#include <sys/wait.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
-void Print_result(time_t start, time_t end);
-void Get_Input(char *argv[]);
 void _travel(int idx);
 void travel(int start);
 void Signal_handler(int sig);
 
-int Maxlen;
-int limit_child;
+#define BUFSIZE 256
+
+int Maxlen, limit_child, count_route;
 int weight[50][50];
 int path[50];
 int used[50];
 int minpath[50];
 int length = 0;
-int count_route;
 int min = 999999999;
+
+void Print_result(time_t start, time_t end);
+void Get_Input(char *argv[]);
+void Signal_handler(int sig);
 
 void Get_Input(char *argv[])
 {
@@ -59,8 +62,11 @@ void Get_Input(char *argv[])
 	printf("\n");
 }
 
-void Signal_handler(int sig){
+void Signal_handler(int sig)
+{
 	printf("You pressed ctrl+c so that it is quit\n");
+	//kill(pid, SIGTERM);
+	exit(1);
 }
 
 void Print_result(time_t start, time_t end)
@@ -85,13 +91,15 @@ void _travel(int idx)
 	if (idx == Maxlen)
 	{
 		length += weight[path[(Maxlen - 1)]][path[0]];
-		if (min > length)
+
+		count_route++;
+		if (min == -1 || min > length)
 		{
 			min = length;
-			count_route++;
 
 			//printf("%d (", length);
-			for (i = 0; i < Maxlen; i++){
+			for (i = 0; i < Maxlen; i++)
+			{
 				minpath[i] = path[i];
 				//printf("%d ", path[i]);
 			}
@@ -114,6 +122,7 @@ void _travel(int idx)
 			}
 		}
 	}
+
 }
 
 void travel(int start)
@@ -132,17 +141,6 @@ int main(int argc, char *argv[])
 
 	start = time(NULL);
 	Get_Input(argv);
-
-	pid_t child_pid[Maxlen];
-	for(int i = 0; i < limit_child; i++){
-		child_pid[i] = fork();
-		if(child_pid == 0){
-			printf("Child %d is created with %d\n", child_pid[i], getpid());
-			signal(SIGINT, Signal_handler);
-		}else if(child_pid < 0){
-			printf("Child %d is failed to be created with %d\n", child_pid[i], getpid());
-		}
-	}
 
 	for (int i = 0; i < Maxlen; i++)
 	{
