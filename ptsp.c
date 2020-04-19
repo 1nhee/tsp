@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
-#include <sched.h>
 #include <unistd.h>
 
 int Maxlen;
@@ -19,7 +17,7 @@ void _travel(int idx)
 
 	if (idx == 17)
 	{
-		length += m[path[16]][path[0]];
+		length += weight[path[16]][path[0]];
 		if (min == -1 || min > length)
 		{
 			min = length;
@@ -29,7 +27,7 @@ void _travel(int idx)
 				printf("%d ", path[i]);
 			printf("%d)\n", path[0]);
 		}
-		length -= m[path[16]][path[0]];
+		length -= weight[path[16]][path[0]];
 	}
 	else
 	{
@@ -39,9 +37,9 @@ void _travel(int idx)
 			{
 				path[idx] = i;
 				used[i] = 1;
-				length += m[path[idx - 1]][i];
+				length += weight[path[idx - 1]][i];
 				_travel(idx + 1);
-				length -= m[path[idx - 1]][i];
+				length -= weight[path[idx - 1]][i];
 				used[i] = 0;
 			}
 		}
@@ -81,7 +79,7 @@ int main(int argc, char *argv[])
 	}
 	fclose(fp);
 
-	for (i = 0; i < Maxlen; i++)
+	for (int i = 0; i < Maxlen; i++)
 	{
 		travel(i);
 	}
