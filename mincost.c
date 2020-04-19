@@ -1,6 +1,12 @@
 #include<stdio.h>
- 
+#include <time.h>
+
+int least(int c);
+void takeInput();
+void mincost(int city);
+
 int ary[10][10],completed[10],n,cost=0;
+
  
 void takeInput()
 {
@@ -38,13 +44,13 @@ void mincost(int city)
  
 	completed[city]=1;
  
-	printf("%d--->",city+1);
-	ncity=least(city);
+	printf("%d--->",city);
+	ncity = least(city);
  
 	if(ncity==999)
 	{
 		ncity=0;
-		printf("%d",ncity+1);
+		printf("%d",ncity);
 		cost+=ary[city][ncity];
  
 		return;
@@ -77,12 +83,20 @@ int least(int c)
  
 int main()
 {
+	time_t start, end;
+    double result;
+	
+	start = time(NULL);
 	takeInput();
  
 	printf("\n\nThe Path is:\n");
 	mincost(0); //passing 0 because starting vertex
  
 	printf("\n\nMinimum cost is %d\n ",cost);
+
+	end = time(NULL); // 시간 측정 끝
+    result = (double)(end - start);
+    printf("%f", result);
  
 	return 0;
 }

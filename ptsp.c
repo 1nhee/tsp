@@ -75,48 +75,13 @@ int main(int argc, char *argv[])
 	{
 		for (int j = 0; j < Maxlen; j++)
 		{
-			fscanf(fp, "%d", &pw);
+			fscanf(fp, "%d ", &pw);
 			weight[i][j] = pw;
 		}
 	}
 	fclose(fp);
 
-	/*
-	for(int i = 0; i < limit_child; i++){
-		
-	//The function that you will use for thread print_message_function // *arg
-		thr_id = pthread_create(&p_thread[i], NULL, t_function, (void *)&a);
-    if (thr_id < 0)
-    {
-        perror("thread create error : ");
-        exit(0);
-    }
-
-		
-	//thread 종료시 필요함
-	pthread_join(p_thread[i], (void **)&status);
-		if(status != 0){
-		printf("Thread Kill error %d\n", status);
-	}
-	printf("Thread End %d\n", status);
-	}
-
-
-
-	pthread_mutex_lock(&m) ;
-			while (turn != 1)
-				pthread_cond_wait(&c, &m) ; // unlock(&m) when it goes waiting.
-		pthread_mutex_unlock(&m) ;
-
-		printf("%s\n", message) ;
-
-		pthread_mutex_lock(&m) ;
-			turn = 2 ;
-			pthread_cond_signal(&c) ;
-		pthread_mutex_unlock(&m) ;
-	*/
-
-	for (i = 0; i < 17; i++)
+	for (i = 0; i < Maxlen; i++)
 	{
 		travel(i);
 	}
