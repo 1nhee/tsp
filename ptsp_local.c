@@ -153,19 +153,22 @@ int main(int argc, char *argv[])
 	per_child = total_count / limit_child;
 	printf("\n%d %d : per child needs to calculte %d\n\n", total_count, limit_child, per_child);
 
-	pid_t pid = fork();
+	pid_t pid[2] = fork();
 
-	//parent p
-	if (pid > 0) { 
-    	travel(0, 3);
-		Print_result();
-    } 
-    // If pid is 0, in child process 
-    else { 
-        travel(4, 7);
-		Print_result();
-    } 
+	for(int i = 0; i < 2; i++){
 
+		if (pid[0] == 0) { 
+			travel(0, 3);
+			Print_result();
+		} 
+
+		if (pid[1] == 0) { 
+			travel(4, 7);
+			Print_result();
+		} 
+	
+		printf("failed\n");
+	}
 
 	return 0;
 }
