@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <time.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+//#include <sys/types.h>
+//#include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,16 +24,6 @@ int min = 999999999;
 void Print_result(time_t start, time_t end);
 void Get_Input(char *argv[]);
 void Signal_handler(int sig);
-
-int Maxlen;
-int limit_child;
-int weight[50][50];
-int path[50];
-int used[50];
-int minpath[50];
-int length = 0;
-int count_route;
-int min = 999999999;
 
 void Get_Input(char *argv[])
 {
@@ -75,7 +65,7 @@ void Get_Input(char *argv[])
 void Signal_handler(int sig)
 {
 	printf("You pressed ctrl+c so that it is quit\n");
-	kill(pid, SIGTERM);
+	//kill(pid, SIGTERM);
 	exit(1);
 }
 
@@ -153,9 +143,11 @@ int main(int argc, char *argv[])
 
 	//signal(SIGINT, Signal_handler);
 
+	/*
 	int parent_p[limit_child][2], child_p[limit_child][2];
 	char buffer[BUFSIZE];
 	pid_t pid[limit_child];
+
 
 	for (int i = 0; i < limit_child; i++)
 	{
@@ -188,11 +180,9 @@ int main(int argc, char *argv[])
 			sleep(1);
 		}
 	}
+	*/
 
-	for (int i = 0; i < Maxlen; i++)
-	{
-		travel(i);
-	}
+	travel(0);
 
 	end = time(NULL);
 	Print_result(start, end);

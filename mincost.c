@@ -1,41 +1,51 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <time.h>
+#include <string.h>
+#include <stdlib.h>
 
 int least(int c);
-void takeInput();
+void Get_Input(char *argv[]);
 void mincost(int city);
+int Maxlen,limit_child, min;
 
-int ary[10][10],completed[10],n,cost=0;
+int weight[50][50],completed[50];
 
  
-void takeInput()
+void Get_Input(char *argv[])
 {
-	int i,j;
- 
-	printf("Enter the number of villages: ");
-	scanf("%d",&n);
- 
-	printf("\nEnter the Cost Matrix\n");
- 
-	for(i=0;i < n;i++)
+	char filename[100];
+	char num[5];
+	int pw;
+
+	//Store input data
+	strcpy(filename, argv[1]);
+	limit_child = atoi(argv[2]);
+
+	//Get Maxlen
+	sscanf(filename, "%2s %2d", num, &Maxlen);
+
+	//Read the data from .tsp
+	FILE *fp = fopen(filename, "r");
+	for (int i = 0; i < Maxlen; i++)
 	{
-		printf("\nEnter Elements of Row: %d\n",i+1);
- 
-		for( j=0;j < n;j++)
-			scanf("%d",&ary[i][j]);
- 
-		completed[i]=0;
+		for (int j = 0; j < Maxlen; j++)
+		{
+			fscanf(fp, "%d ", &pw);
+			weight[i][j] = pw;
+		}
 	}
- 
+	fclose(fp);
+
 	printf("\n\nThe cost list is:");
- 
-	for( i=0;i < n;i++)
+
+	for (int i = 0; i < Maxlen; i++)
 	{
 		printf("\n");
- 
-		for(j=0;j < n;j++)
-			printf("\t%d",ary[i][j]);
+
+		for (int j = 0; j < Maxlen; j++)
+			printf("\t%d", weight[i][j]);
 	}
+	printf("\n\n");
 }
  
 void mincost(int city)
@@ -51,7 +61,7 @@ void mincost(int city)
 	{
 		ncity=0;
 		printf("%d",ncity);
-		cost+=ary[city][ncity];
+		min+=weight[city][ncity];
  
 		return;
 	}
@@ -64,39 +74,31 @@ int least(int c)
 	int i,nc=999;
 	int min=999,kmin;
  
-	for(i=0;i < n;i++)
+	for(i=0;i < Maxlen; i++)
 	{
-		if((ary[c][i]!=0)&&(completed[i]==0))
-			if(ary[c][i]+ary[i][c] < min)
+		if((weight[c][i]!=0)&&(completed[i]==0))
+			if(weight[c][i]+weight[i][c] < min)
 			{
-				min=ary[i][0]+ary[c][i];
-				kmin=ary[c][i];
+				min=weight[i][0]+weight[c][i];
+				kmin=weight[c][i];
 				nc=i;
 			}
 	}
  
 	if(min!=999)
-		cost+=kmin;
+		min+=kmin;
  
 	return nc;
 }
  
-int main()
+int main(int argc, char *argv[])
 {
-	time_t start, end;
-    double result;
-	
-	start = time(NULL);
-	takeInput();
+	Get_Input(argv);
  
 	printf("\n\nThe Path is:\n");
 	mincost(0); //passing 0 because starting vertex
  
-	printf("\n\nMinimum cost is %d\n ",cost);
+	printf("\n\nMinimum cost is %d\n ", min);
 
-	end = time(NULL); // 시간 측정 끝
-    result = (double)(end - start);
-    printf("%f", result);
- 
 	return 0;
 }

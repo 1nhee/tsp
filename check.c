@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int _travel(int idx);
+void _travel(int idx);
 void travel(int start);
 void Signal_handler(int sig);
 void Print_result();
@@ -16,7 +16,7 @@ int factorial(int n);
 
 #define BUFSIZE 256
 
-int Maxlen, limit_child, count_route, per_child;
+int Maxlen, limit_child, count_route;
 int weight[50][50];
 int path[50];
 int used[50];
@@ -85,14 +85,13 @@ void Print_result()
 
 int factorial(int n)
 {
-	if (n == 1)
-	{
-		return 1;
-	}
-	return n * factorial(n - 1);
+    if (n == 1){      
+        return 1;
+	}    
+    return n * factorial(n - 1);   
 }
 
-int _travel(int idx)
+void _travel(int idx)
 {
 	int i;
 
@@ -101,17 +100,23 @@ int _travel(int idx)
 		length += weight[path[(Maxlen - 1)]][path[0]];
 
 		count_route++;
+		/*
+        printf("%d (", length);
+		for (i = 0; i < Maxlen; i++)
+		{
+			printf("%d ", path[i]);
+		}
+		printf("%d)\n", path[0]);
+        */
 
 		if (min == -1 || min > length)
 		{
 			min = length;
-			printf("%d (", length);
+
 			for (i = 0; i < Maxlen; i++)
 			{
 				minpath[i] = path[i];
-				printf("%d ", path[i]);
 			}
-			printf("%d)\n", path[0]);
 		}
 		length -= weight[path[(Maxlen - 1)]][path[0]];
 	}
@@ -132,27 +137,33 @@ int _travel(int idx)
 	}
 }
 
+void travel(int start)
+{
+	path[0] = start;
+	used[start] = 1;
+	_travel(1);
+	used[start] = 0;
+}
+
+
 int main(int argc, char *argv[])
 {
 
 	time_t start, end;
 	count_route = 0;
-	int total_count, idx;
+	int total_count, per_child, idx;
 
 	/*
 	start = time(NULL);
 	end = time(NULL);
 	*/
 	Get_Input(argv);
-	total_count = factorial((Maxlen - 1));
-	per_child = total_count / limit_child;
+	total_count = factorial((Maxlen-1));
+	per_child = total_count/limit_child;
 	printf("\n%d %d : per child needs to calculte %d\n\n", total_count, limit_child, per_child);
 
-	path[0] = 0;
-	used[0] = 1;
-	_travel(1);
-	used[0] = 0;
-	Print_result();
+	travel(0);
+	Print_result(start, end);
 
 	return 0;
 }
