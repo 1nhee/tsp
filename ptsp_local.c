@@ -2,13 +2,12 @@
 #include <signal.h>
 #include <time.h>
 #include <sys/types.h>
-//#include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 
-int _travel(int idx);
-void travel(int start);
+int _travel(int idx, int end);
+void travel(int start, int end);
 void Signal_handler(int sig);
 void Print_result();
 void Get_Input(char *argv[]);
@@ -92,13 +91,11 @@ int factorial(int n)
 	return n * factorial(n - 1);
 }
 
-int _travel(int idx)
+int _travel(int idx, int end)
 {
-	int i;
-
-	if (idx == Maxlen)
+	if (idx == end)
 	{
-		length += weight[path[(Maxlen - 1)]][path[0]];
+		length += weight[path[(end - 1)]][path[0]];
 
 		count_route++;
 
@@ -106,30 +103,38 @@ int _travel(int idx)
 		{
 			min = length;
 			printf("%d (", length);
-			for (i = 0; i < Maxlen; i++)
+			for (int i = 0; i < end; i++)
 			{
 				minpath[i] = path[i];
 				printf("%d ", path[i]);
 			}
 			printf("%d)\n", path[0]);
 		}
-		length -= weight[path[(Maxlen - 1)]][path[0]];
+		length -= weight[path[(end - 1)]][path[0]];
 	}
 	else
 	{
-		for (i = 0; i < Maxlen; i++)
+		for (int i = 0; i < end; i++)
 		{
 			if (used[i] == 0)
 			{
 				path[idx] = i;
 				used[i] = 1;
 				length += weight[path[idx - 1]][i];
-				_travel(idx + 1);
+				_travel(idx + 1, end);
 				length -= weight[path[idx - 1]][i];
 				used[i] = 0;
 			}
 		}
 	}
+}
+
+void travel(int start, int end)
+{
+	path[0] = start;
+	used[start] = 1;
+	_travel(start, end);
+	used[start] = 0;
 }
 
 int main(int argc, char *argv[])
@@ -148,11 +153,19 @@ int main(int argc, char *argv[])
 	per_child = total_count / limit_child;
 	printf("\n%d %d : per child needs to calculte %d\n\n", total_count, limit_child, per_child);
 
-	path[0] = 0;
-	used[0] = 1;
-	_travel(1);
-	used[0] = 0;
-	Print_result();
+	pid_t pid = fork();
+
+	//parent p
+	if (pid > 0) { 
+    	travel(0, 3);
+		Print_result();
+    } 
+    // If pid is 0, in child process 
+    else { 
+        travel(4, 7);
+		Print_result();
+    } 
+
 
 	return 0;
 }
